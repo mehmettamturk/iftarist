@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta charset="utf-8">
+        <title>İftarist</title>
+        <meta name="description" content="">
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+           
+        <script src="jquery.js"></script>
+        <script src="data.js"></script>
+        
+    	<link rel="stylesheet" href="opensans/opensans.css"/>
+        <script>
+            $(function() {
+                var showTime = function() {
+                    var today = new Date();
+                    var nextTime;
+                    var text = '';
+                    var type = -1;
+
+                    for (var i = 0; i < times.length; i++) {
+                        if (times[i].imsak - today > 0){
+                            nextTime = times[i].imsak;
+                            text = 'İmsak\'a<br /><br />';
+                            type = 0;
+                            break;
+                        }
+                        if (times[i].iftar - today > 0){
+                            nextTime = times[i].iftar;
+                            text = 'İftara<br /><br />';
+                            type = 1;
+                            break;
+                        } 
+                    }
+                    
+                    if (type == -1) {
+                    	
+                        if (today - new Date('August 7, 2013 20:23:00') > 0) {
+                        	nextTime = new Date('August 8, 2013 06:50:00');
+                            text = 'Ramazan Bayramı <br />Namazına<br /><br />';
+                            type = 2;
+                        }
+
+                        if (today - nextTime > 0) {
+                        	nextTime = new Date('June 28, 2014 03:00:00');
+                            text = 'Bir Sonraki Ramazan\'a <br /><br />';
+                        }
+                    }
+
+                    var diffMs = (nextTime - today);
+                    var diffDays = Math.floor(diffMs / 86400000);
+                    var diffHrs = Math.floor((diffMs % 86400000) / 3600000);
+                    var diffMins = Math.floor(((diffMs % 86400000) % 3600000) / 60000);
+                    var diffSecs = Math.floor((((diffMs % 86400000) % 3600000) % 60000) / 1000);
+
+                    if (diffDays > 0) {
+                        text += '<span>' + diffDays + '</span>gün';
+                    }
+                    if (diffHrs > 0) {
+                        text += '<span>' + diffHrs + '</span>saat';
+                        startInterval(60000);
+                    }
+                    if (diffMins > 0) {
+                        text += '<span>' + diffMins + '</span>dakika';
+                    }
+                    if (diffSecs > 0 && diffHrs == 0) {
+                        text += '<span>' + diffSecs + '</span>saniye';
+                        clearInterval(counter);
+                        startInterval(1000);
+                    }
+
+                    if (diffDays == 0 && diffMins == 0 && diffSecs == 0) {
+                        showEzan(type);
+                    }
+
+                    text +=  '<br /><br />kaldı';
+                    $('#time').html(text);
+                };
+
+                var counter;
+                var startInterval = function(range) {
+                    counter = setInterval(function() {
+                        showTime();
+                    }, range);
+                };
+
+                showTime();
+                startInterval(60000);
+
+                var showEzan = function (type) {
+                    $('#time').hide();
+                    var $ezan = $('.ezan');
+                    $ezan.addClass('show');
+                    var markup = '<span>EZAN OKUNUYOR</span>';
+                    if (type)
+                        markup += '<br/><br/><br/> ' +
+                                '<em>ALLAH <br/>KABUL ETSİN</em>';
+                    $ezan.html(markup);
+                    setTimeout(function () {
+                        $('#time').show();
+                        $('.ezan').removeClass('show');
+                    }, 15000)
+                };
+            })
+        </script>
+
+        <style>
+        	body { font-family: 'Open Sans'; background: url('brickwall.png') repeat; overflow: hidden; }
+            #time { width: 100%; text-align: center; font-size: 30px;
+                    text-shadow: 0 5px 5px rgba(0,0,0,0.1),
+                                10px 10px 5px rgba(0,0,0,0.05),
+                                -10px 15px 5px rgba(0,0,0,0.05); }
+            #time span {
+                display: block; font-weight: bold; font-size: 50px; color: dodgerblue;
+                text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+            }
+
+            #content {
+                position: absolute;
+                top: 50%;
+                height: 330px;
+                width: 100%;
+                text-align: center;
+                margin-top: -165px;
+            }
+
+            .ezan {
+                display: none;
+                font-size: 30px;
+                color: black;
+                text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+            }
+            .ezan.show {
+                display: block;
+            }
+
+            .ezan span { color: dodgerblue; }
+        </style>
+	</head>
+	<body>
+		<div id="content">
+			<div id="time"></div>
+            <div class="ezan"></div>
+		</div>
+	</body>
+</html>
